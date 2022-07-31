@@ -1,0 +1,18 @@
+---
+- hosts: webservers
+  become: true
+  become_user: root
+  vars:
+   src_path: /playbook/index.html
+   dest_path: /var/www/html
+  tasks:
+  - name: install httpd package
+    yum: name=httpd state=present
+  - name: start the service
+    service: name=httpd state=started
+  - name: copy the file
+    copy: src={{src_path}} dest={{dest_path}}
+    notify: restart apache
+  handlers:
+  - name: restart apache
+    service: name=httpd state=restarted
